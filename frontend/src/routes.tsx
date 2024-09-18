@@ -3,7 +3,6 @@ import HomePage from "./pages/home";
 import LoginPage from "./pages/login";
 import PrivateRoute from "./components/PrivateRoute";
 import RegisterPage from "./pages/register";
-import EditPage from "./pages/edit";
 
 export const router = createBrowserRouter([
     {
@@ -13,10 +12,6 @@ export const router = createBrowserRouter([
                 path: '/',
                 element: <HomePage/>
             },
-            {
-                path: '/edit/:id',
-                element: <EditPage/>
-            }
         ]
     },
     {

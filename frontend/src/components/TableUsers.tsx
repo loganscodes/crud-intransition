@@ -4,7 +4,6 @@ import axios from 'axios';
 import { Users } from '../interfaces/users-interface';
 import '../App.css'
 import Logout from './Logout';
-import { Link } from 'react-router-dom';
 
 interface Column {
     id: number,
@@ -42,6 +41,26 @@ const TableUsers = () => {
         getUsers()
     }, [])
 
+    const handleStatusChange = async (id: number, newStatus: string) => {
+        try {
+            await axios.put(`http://localhost:8000/${id}`, {
+                status: newStatus,
+            });
+            setUsers((prevUsers) =>
+                prevUsers.map((user) =>
+                    user.id === id ? { ...user, status: newStatus } : user
+                )
+            );
+        } catch (error) {
+            console.error('Error updating status:', error);
+        }
+    };
+
+    const handleDelete = async(id: number) => {
+        await axios.delete(`http://localhost:8000/${id}`)
+        getUsers()
+    }
+
 
     return (
         <>  
@@ -74,8 +93,26 @@ const TableUsers = () => {
                                         <TableCell>{user.registration_time ? new Date(user.registration_time).toLocaleString() : 'N/A'}</TableCell>
                                         <TableCell>{user.status}</TableCell>
                                         <TableCell style={{ display: 'flex', gap: '10px' }}>
-                                            <Link to={`/edit/${user.id}`}>Editar</Link>
-                                            <button>Eliminar</button>
+                                            {/* <Link to={`/edit/${user.id}`}>Block</Link> */}
+                                            <button style={{ 
+                                                backgroundColor: 'red', 
+                                                color: 'white', 
+                                                fontWeight: 'bold'
+                                            }}
+                                                onClick={() => handleStatusChange(user.id, 'blocked')}
+                                            >
+                                                Block
+                                            </button>
+                                            
+                                            <button
+                                                onClick={() => handleStatusChange(user.id, 'active')}
+                                            >
+                                                unblock
+                                            </button>
+                                            
+                                            <button
+                                                onClick={() => handleDelete(user.id)}
+                                            >delete</button>
                                         </TableCell>
                                     </TableRow>
                                 ))
