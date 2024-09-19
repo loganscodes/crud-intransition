@@ -1,129 +1,94 @@
-import { useEffect, useState } from 'react';
-import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
-import axios from 'axios';
-import { Users } from '../interfaces/users-interface';
-import '../App.css'
+import '../App.css';
+import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Checkbox } from '@mui/material';
+
+import { useTableUsers } from '../hooks/useTableUsers';
+
 import Logout from './Logout';
+import ActionButtons from './ui/ActionButtons';
 
 interface Column {
     id: number,
     label: string;
-    minWidth?: number;
-    format?: (value: number) => string;
 }
 
 const columns: readonly Column[] = [
-
-    { id: 1, label: 'Name', },
-    { id: 2, label: 'Email', },
-    { id: 3, label: 'Last Login' },
-    { id: 4, label: 'Registration Time' },
-    { id: 5, label: 'Status' },
-    { id: 6, label: 'Actions' }
-
+    { id: 0, label: '' }, 
+    { id: 1, label: 'ID' },
+    { id: 2, label: 'Name' },
+    { id: 3, label: 'Email' },
+    { id: 4, label: 'Last Login' },
+    { id: 5, label: 'Registration Time' },
+    { id: 6, label: 'Status' },
 ];
 
 const TableUsers = () => {
 
-    const [users, setUsers] = useState<Users[]>([])
-
-    const getUsers = async () => {
-        const res = await axios.get('http://localhost:8000/')
-        const users = res.data.map((user: Users) => ({
-            ...user,
-            last_login_time: new Date(user.last_login_time),
-            registration_time: new Date(user.registration_time)
-        }))
-        setUsers(users)
-    }
-
-    useEffect(() => {
-        getUsers()
-    }, [])
-
-    const handleStatusChange = async (id: number, newStatus: string) => {
-        try {
-            await axios.put(`http://localhost:8000/${id}`, {
-                status: newStatus,
-            });
-            setUsers((prevUsers) =>
-                prevUsers.map((user) =>
-                    user.id === id ? { ...user, status: newStatus } : user
-                )
-            );
-        } catch (error) {
-            console.error('Error updating status:', error);
-        }
-    };
-
-    const handleDelete = async(id: number) => {
-        await axios.delete(`http://localhost:8000/${id}`)
-        getUsers()
-    }
-
+    const { users, selectedUsers, handleStatusChange, handleDelete, handleSelect, handleSelectAll } = useTableUsers()
 
     return (
-        <>  
-            <Logout/>
+        <>
+            <Logout />
+
+            <ActionButtons selectedUsers={selectedUsers} onStatusChange={handleStatusChange} onDelete={handleDelete} />
+
             <Paper sx={{ width: '100%', overflow: 'hidden' }}>
                 <TableContainer sx={{ maxHeight: 440 }}>
-                    <Table stickyHeader aria-label='sticky table'>
+                    <Table stickyHeader aria-label="sticky table">
                         <TableHead>
                             <TableRow>
-                                {
-                                    columns.map((column) => (
-                                        <TableCell
-                                            key={column.id}
-                                            align="center"
-                                            style={{ minWidth: column.minWidth }}
-                                        >
-                                            {column.label}
-                                        </TableCell>
-                                    ))
-                                }
+                                <TableCell align="center">
+                                    <Checkbox
+                                        indeterminate={selectedUsers.length > 0 && selectedUsers.length < users.length}
+                                        checked={users.length > 0 && selectedUsers.length === users.length}
+                                        onChange={(e) => handleSelectAll(e.target.checked) }
+                                    />
+                                </TableCell>
+                                {columns.slice(1).map((column) => (
+                                    <TableCell
+                                        align="center"
+                                        key={column.id}
+                                        style={{ minWidth: 150 }}
+                                    >
+                                        {column.label}
+                                    </TableCell>
+                                ))}
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {
-                                users.map((user) => (
-                                    <TableRow key={user.id} hover role='checkbox'>
-                                        <TableCell>{user.name}</TableCell>
-                                        <TableCell>{user.email}</TableCell>
-                                        <TableCell>{user.last_login_time ? new Date(user.last_login_time).toLocaleString() : 'N/A'}</TableCell>
-                                        <TableCell>{user.registration_time ? new Date(user.registration_time).toLocaleString() : 'N/A'}</TableCell>
-                                        <TableCell>{user.status}</TableCell>
-                                        <TableCell style={{ display: 'flex', gap: '10px' }}>
-                                            {/* <Link to={`/edit/${user.id}`}>Block</Link> */}
-                                            <button style={{ 
-                                                backgroundColor: 'red', 
-                                                color: 'white', 
-                                                fontWeight: 'bold'
+                            {users.map((user) => (
+                                <TableRow key={user.id} hover role="checkbox">
+                                    <TableCell padding="checkbox" align="center">
+                                        <Checkbox
+                                            checked={selectedUsers.includes(user.id)}
+                                            onChange={() => handleSelect(user.id)}
+                                        />
+                                    </TableCell>
+                                    <TableCell align="center">{user.id}</TableCell>
+                                    <TableCell align="center">{user.name}</TableCell>
+                                    <TableCell align="center">{user.email}</TableCell>
+                                    <TableCell align="center">{user.last_login_time ? new Date(user.last_login_time).toLocaleString() : 'N/A'}</TableCell>
+                                    <TableCell align="center">{user.registration_time ? new Date(user.registration_time).toLocaleString() : 'N/A'}</TableCell>
+                                    <TableCell align="center">
+                                        <span
+                                            style={{
+                                                textTransform: 'capitalize',
+                                                padding: '5px',
+                                                borderRadius: '10px',
+                                                color: 'white',
+                                                backgroundColor: user.status === 'blocked' ? 'red' : 'green',
                                             }}
-                                                onClick={() => handleStatusChange(user.id, 'blocked')}
-                                            >
-                                                Block
-                                            </button>
-                                            
-                                            <button
-                                                onClick={() => handleStatusChange(user.id, 'active')}
-                                            >
-                                                unblock
-                                            </button>
-                                            
-                                            <button
-                                                onClick={() => handleDelete(user.id)}
-                                            >delete</button>
-                                        </TableCell>
-                                    </TableRow>
-                                ))
-                            }
+                                        >
+                                            {user.status}
+                                        </span>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
                         </TableBody>
                     </Table>
                 </TableContainer>
             </Paper>
         </>
+    );
+};
 
-    )
-}
-
-export default TableUsers
+export default TableUsers;
