@@ -31,6 +31,7 @@ const Register = () => {
                 placeholder='Email'
                 variant='outlined'
                 size='small'
+                type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
             />
@@ -40,11 +41,12 @@ const Register = () => {
                 placeholder='Password'
                 variant='outlined'
                 size='small'
+                type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
             />
 
-            <FormButtons nameButton="Register" nameAnchor="Login"/>
+            <FormButtons path="/login" nameButton="Register" nameAnchor="Login"/>
         </Box>
     )
 }

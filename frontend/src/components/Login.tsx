@@ -37,7 +37,7 @@ const Login = () => {
                 onChange={(e) => setPassword(e.target.value)}
             />
 
-            <FormButtons nameButton="Login" nameAnchor="Register"/>
+            <FormButtons path="/register" nameButton="Login" nameAnchor="Register"/>
         
         </Box>
     )
