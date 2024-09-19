@@ -1,21 +1,10 @@
-import { Box, Button, TextField } from "@mui/material"
-import axios from "axios"
-import { FormEvent, useState } from "react"
-import { Link, useNavigate } from "react-router-dom"
+import { Box, TextField,  } from "@mui/material"
+import { useRegister } from "../hooks/useRegister"
+import FormButtons from "./ui/FormButtons"
 
 const Register = () => {
 
-    const [name, setName] = useState('')
-    const [email, setEmail] = useState('')
-    const [password, setPassword] = useState('')
-    const navigate = useNavigate()
-
-    const handleRegister = async(event: FormEvent<HTMLFormElement>) => {
-        event.preventDefault()
-
-        await axios.post('http://localhost:8000/auth/register', { name, email, password })
-        navigate('/login')
-    }
+    const { handleRegister, name, setName, email, setEmail, password, setPassword } = useRegister()
 
     return (
         <Box component='form' onSubmit={handleRegister} style={{
@@ -55,15 +44,7 @@ const Register = () => {
                 onChange={(e) => setPassword(e.target.value)}
             />
 
-            {/* <TextField
-                hiddenLabel
-                placeholder="Repeat Password"
-                variant='outlined'
-                size='small'
-            /> */}
-
-            <Button type='submit' variant='contained'>Register</Button>
-            <Link to='/login'>Login</Link>
+            <FormButtons nameButton="Register" nameAnchor="Login"/>
         </Box>
     )
 }

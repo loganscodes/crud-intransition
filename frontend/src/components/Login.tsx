@@ -1,31 +1,12 @@
-import { FormEvent, useState } from "react"
-import { Link, useNavigate } from "react-router-dom"
-import { useAuth } from "../store/authContext"
-import axios from "axios"
-import { Box, Button, TextField } from "@mui/material"
+import { Box, TextField } from "@mui/material"
+import { useLogin } from "../hooks/useLogin"
+import FormButtons from "./ui/FormButtons"
 
 const Login = () => {
 
-    const [email, setEmail] = useState('')
-    const [password, setPassword] = useState('')
-    const navigate = useNavigate()
-    const { login } = useAuth()
+    const { handleLogin, email, setEmail, password, setPassword } = useLogin()
 
-    const handleLogin = async(event: FormEvent<HTMLFormElement>) => {
-        event.preventDefault()
-
-        try {
-            const res = await axios.post('http://localhost:8000/auth/login', { email, password })
-            alert(res.data.message)
-            login(res.data.token)
-            navigate('/')
-        } catch (error) {
-            console.log(error)
-        }
-    }
-
-
-
+    
     return (
         <Box component='form' onSubmit={handleLogin} style={{ 
             backgroundColor: 'white', 
@@ -38,7 +19,7 @@ const Login = () => {
 
             <TextField
                 hiddenLabel
-                placeholder='email'
+                placeholder='Email'
                 variant='outlined'
                 size='small'
                 autoFocus
@@ -48,17 +29,16 @@ const Login = () => {
 
             <TextField
                 hiddenLabel
-                placeholder='password'
+                placeholder='Password'
                 variant='outlined'
                 size='small'
+                type='password'
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
             />
 
-            <Button type='submit' variant="contained">Log In</Button>
-
-            <Link to='/register'>Register</Link>
-            
+            <FormButtons nameButton="Login" nameAnchor="Register"/>
+        
         </Box>
     )
 }
