@@ -27,7 +27,11 @@ export const loginUser = async(req, res) => {
         const user = await UserModel.findOne({ where: { email } })
         const isValidPassword = await bcrypt.compare(password, user.password)
 
-        if(!user || !isValidPassword) return res.status(401).json('Invalid credential')
+        if(!user || !isValidPassword) return res.status(401).json('Invalid credential');
+
+        if(user.status === 'blocked') return res.status(403).json({ message: 'Account is blocked. Please contact support.' })
+        
+        await UserModel.update({ last_login_time: new Date() }, { where: { id: user.id } })
 
         const token = jwt.sign(
             { id: user.id, name: user.name, email: user.email },
