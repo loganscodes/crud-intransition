@@ -1,53 +1,29 @@
-import { Box, TextField,  } from "@mui/material"
 import { useRegister } from "../hooks/useRegister"
 import FormButtons from "./ui/FormButtons"
+import UIForm from "./ui/UIForm"
+import UIInput from "./ui/UIInput"
+
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Register = () => {
 
     const { handleRegister, name, setName, email, setEmail, password, setPassword } = useRegister()
 
     return (
-        <Box component='form' onSubmit={handleRegister} style={{
-            backgroundColor: 'white',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '20px',
-            padding: '5em',
-            border: '1px solid black'
-        }}>
-            <TextField
-                hiddenLabel
-                placeholder='Name'
-                variant='outlined'
-                size='small'
-                type='text'
-                autoFocus
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-            />
+        <>
+            <UIForm onSubmit={handleRegister}>
+                <UIInput placeholder="Name" value={name} onChange={(e) => setName(e.target.value)} />
+                <UIInput placeholder="Email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+                <UIInput placeholder="Password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+                <FormButtons path="/login" nameButton="Register" nameAnchor="Login" />
 
-            <TextField
-                hiddenLabel
-                placeholder='Email'
-                variant='outlined'
-                size='small'
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-            />
+                <ToastContainer  />
 
-            <TextField
-                hiddenLabel
-                placeholder='Password'
-                variant='outlined'
-                size='small'
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-            />
+            </UIForm>
 
-            <FormButtons path="/login" nameButton="Register" nameAnchor="Login"/>
-        </Box>
+
+        </>
     )
 }
 

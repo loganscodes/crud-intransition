@@ -3,6 +3,8 @@ import { FormEvent, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { URL_ENDPOINT } from "../api/api"
 
+
+
 export const useRegister = () => {
     
     const [name, setName] = useState('')
@@ -12,9 +14,14 @@ export const useRegister = () => {
 
     const handleRegister = async(event: FormEvent<HTMLFormElement>) => {
         event.preventDefault()
-
-        await axios.post(`${URL_ENDPOINT}/auth/register`, { name, email, password })
-        navigate('/login')
+        
+        try {
+            await axios.post(`${URL_ENDPOINT}/auth/register`, { name, email, password })
+            alert('Registration Succesfully')
+            navigate('/login')
+        } catch (error) {
+            console.log(error)
+        }
     }
 
     return{
